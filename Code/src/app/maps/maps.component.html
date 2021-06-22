@@ -1,0 +1,94 @@
+<section class="header">
+  <div class="row no-gutters">
+    <div class="col-md-3">
+      <select class="caret-select" id="ddlKiosk" (change)="changeKioskSelection()">
+        <option value="0">
+          All
+        </option>
+        <option *ngFor="let kiosk of kioskList" value={{kiosk.kioskId}}>
+          {{kiosk.name}}
+        </option>
+      </select>
+    </div>
+    
+    <div class="col-md-6" style="padding-top: 20px; padding-left: 30px;;">
+      &nbsp;
+    </div>
+    <div id="houseCount" class="col-md-3 text-right total-house">
+      <div>
+
+      </div>
+      <div class="fix-home">        
+        <div class="float-r">
+          <i class="fas fa-house-damage"></i> <span class="house"> {{pageDetail.kioskTotal}}</span><br>
+          <h6>Total Kiosk</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div #gmap style="width:100%;height:600px;margin-top: -50px; position:absolute;" id="divMap"></div>
+
+<div id="divKiosk" class="kiosk-box" style="display: none;">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="main-box" style="background-color: #0ba118; color: #fff; text-align: center; ">
+        <div class="all-details">
+          <h6 style="text-align: center!important;">Kiosk Detail
+          </h6>
+        </div>
+      </div>
+      <div class="main-box">
+        <div class="all-details">
+          <h6>{{pageDetail.kioskName}} <br>
+            <p>Mobile : {{pageDetail.kioskMobile}}</p>
+          </h6>
+        </div>
+      </div>
+      <div class="main-box">
+        <div class="all-details">
+          <h6>Address<br/>
+            <p>{{pageDetail.kioskAddress}}</p>
+          </h6>
+        </div>
+      </div>
+      <div class="main-box">
+        <div class="all-details">
+          <h6>Total Farmers : {{pageDetail.totalFarmers}}
+          </h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="divFarmer" class="farmer-box" style="display: none;">
+  <div class="row">
+    <div class="col-md-12">      
+      
+      <div class="main-box" style="background-color: #0ba118; color: #fff; text-align: center; ">
+        <div class="all-details">
+          <h6>Farmer Detail
+          </h6>
+        </div>
+      </div>
+      <div class="main-box">
+        <div class="all-details">
+          <h6>Address<br/>
+            <p>{{pageDetail.farmerAddress}}</p>
+          </h6>
+        </div>
+      </div>
+      <div class="main-box">
+        <div class="all-details">
+          <h6>
+            <p>Mobile : {{pageDetail.farmerMobile}}</p>
+            <p>Email ID : {{pageDetail.farmerEmail}}</p>
+          </h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
