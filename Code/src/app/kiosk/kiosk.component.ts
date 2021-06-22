@@ -176,7 +176,7 @@ export class KioskComponent {
       }
     });
     if (isSelected == true) {
-      marker.setAnimation(google.maps.Animation.BOUNCE);
+     // marker.setAnimation(google.maps.Animation.BOUNCE);
     }
 
     if (type == "farmer") {
@@ -237,7 +237,7 @@ export class KioskComponent {
           pageDetails.kioskAddress = details.address;
           pageDetails.kioskMobile = details.mobile;
         }
-        KioskComponent.prototype.setSelectedMarker(index,markerList);
+        //KioskComponent.prototype.setSelectedMarker(index,markerList);
       });
     }
     this.allMarkers.push({ marker });
