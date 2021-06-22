@@ -120,7 +120,6 @@ export class KioskComponent {
               if (farmerData[i]["farmerAddress"]["latitude"] != null) {
                 lat = farmerData[i]["farmerAddress"]["latitude"];
                 lng = farmerData[i]["farmerAddress"]["longitude"];
-                console.log(lat)
                 this.setMarker(lat, lng, markerUrl, contentString, "farmer", farmerId, this.farmerList);
                 this.bounds.extend({ lat: Number(lat), lng: Number(lng) });
                 this.map.fitBounds(this.bounds);
