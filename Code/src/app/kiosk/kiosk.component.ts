@@ -87,14 +87,14 @@ export class KioskComponent {
                 lat = kioskData[i]["kioskAddress"]["latitude"];
                 lng = kioskData[i]["kioskAddress"]["longitude"];
                 let markerUrl = "../assets/img/kiosk.png";
-                let markerList=this.allMarkers;
+                let markerList = this.allMarkers;
                 this.kioskList.push({ kioskId: kioskId, name: name, address: address, lat: lat, lng: lng, pinCode: pinCode, village: village, mobile: mobile });
                 this.bounds.extend({ lat: Number(lat), lng: Number(lng) });
                 if (isFirst == true) {
                   isFirst = false;
                   $('#divKiosk').show();
                   this.preIndex = 0;
-                  this.setMarker(lat, lng, markerUrl, "kiosk", kioskId, true, 0,markerList);
+                  this.setMarker(lat, lng, markerUrl, "kiosk", kioskId, true, 0, markerList);
                   let details = this.kioskList.find(item => item.kioskId == kioskId);
                   if (details != undefined) {
                     this.pageDetail.kioskName = details.name;
@@ -103,7 +103,7 @@ export class KioskComponent {
                   }
                 }
                 else {
-                  this.setMarker(lat, lng, markerUrl, "kiosk", kioskId, false, this.allMarkers.length-1,markerList);
+                  this.setMarker(lat, lng, markerUrl, "kiosk", kioskId, false, this.allMarkers.length - 1, markerList);
                 }
               }
             }
@@ -116,6 +116,20 @@ export class KioskComponent {
 
   getFarmers() {
     this.bounds = new google.maps.LatLngBounds();
+    let kioskLat = 0;
+    let kioskLng = 0;
+    let kioskDetails = this.kioskList.find(item => item.kioskId == this.selectedKiosk);
+    if (kioskDetails != undefined) {
+      if (kioskDetails.lat != "") {
+        kioskLat = Number(kioskDetails.lat);
+        kioskLng = Number(kioskDetails.lng);
+        let markerList = this.allMarkers;
+        let markerUrl = "../assets/img/kiosk.png";
+        this.setMarker(kioskDetails.lat, kioskDetails.lng, markerUrl, "kiosk", this.selectedKiosk, false, -1, markerList);
+        this.bounds.extend({ lat: Number(kioskDetails.lat), lng: Number(kioskDetails.lng) });
+        this.map.fitBounds(this.bounds);
+      }
+    }
     this.farmerList = [];
     let farmerUrl = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/kiosk/" + this.selectedKiosk + "/farmer?limit=100000&offset=0";
     this.httpService.get(farmerUrl).subscribe((res) => {
@@ -125,41 +139,128 @@ export class KioskComponent {
         let farmerData = data["rows"];
         if (farmerData.length > 0) {
           for (let i = 0; i < farmerData.length; i++) {
-            let markerUrl = "../assets/img/green.svg";
+            let markerUrl = "../assets/img/farmer.png";
             let contentString = "";
             let farmerId = farmerData[i]["farmerId"];
-            let lat = "";
-            let lng = "";
+            let lat = 0;
+            let lng = 0;
             if (farmerData[i]["farmerAddress"] != null) {
               if (farmerData[i]["farmerAddress"]["latitude"] != null) {
                 lat = farmerData[i]["farmerAddress"]["latitude"];
                 lng = farmerData[i]["farmerAddress"]["longitude"];
-                let markerList=this.allMarkers;
-                this.setMarker(lat, lng, markerUrl, "farmer", farmerId, false, -1,markerList);
+                let markerList = this.allMarkers;
+                this.setMarker(lat, lng, markerUrl, "farmer", farmerId, false, -1, markerList);
                 this.bounds.extend({ lat: Number(lat), lng: Number(lng) });
                 this.map.fitBounds(this.bounds);
               }
+              else {
+                const EARTH_RADIUS = 6378;
+                var y0 = kioskLat;
+                var x0 = kioskLng;
+                var rd = EARTH_RADIUS / 111300; //about 111300 meters in one degree
+
+                var u = Math.random();
+                var v = Math.random();
+               // console.log("u" + u);
+               // console.log("v" + v);
+
+                var w = rd * Math.sqrt(u);
+                var t = 2 * Math.PI * v;
+                var x = w * Math.cos(t);
+                var y = w * Math.sin(t);
+
+                //Adjust the x-coordinate for the shrinking of the east-west distances
+                var xp = x / Math.cos(y0);
+
+                var newlat = y + y0;
+                var newlon = x + x0;
+                var newlon2 = xp + x0;
+                lat = newlat;
+                lng = newlon;
+
+
+                // distance
+
+              //  var R = 6371; // km
+              //  var dLat = this.toRad(lat - kioskLat);
+             //   var dLon = this.toRad(lng - kioskLng);
+             //   var lat1 = this.toRad(kioskLat);
+              //  var lat2 = this.toRad(lat);
+
+              //  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+             //     Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+              //  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+              //  var d = R * c;
+             //   console.log("distance " + d);
+
+
+
+
+                // Random random = new Random();
+
+                ///  lat = kioskLat + (5 / EARTH_RADIUS) * (180 / Math.PI);
+                //  lng = kioskLng + (5 / EARTH_RADIUS) * (180 / Math.PI) / Math.cos(kioskLat * Math.PI / 180);
+                //console.log("lat:" + lat);
+                // console.log("lng:" + lng);
+                let markerList = this.allMarkers;
+                this.setMarker(lat, lng, markerUrl, "farmer", farmerId, false, -1, markerList);
+                this.bounds.extend({ lat: Number(lat), lng: Number(lng) });
+                this.map.fitBounds(this.bounds);
+              }
+            }
+            else {
+              const EARTH_RADIUS = 6378;
+              var y0 = kioskLat;
+              var x0 = kioskLng;
+              var rd = EARTH_RADIUS / 111300; //about 111300 meters in one degree
+
+              var u = Math.random();
+              var v = Math.random();
+
+              var w = rd * Math.sqrt(u);
+              var t = 2 * Math.PI * v;
+              var x = w * Math.cos(t);
+              var y = w * Math.sin(t);
+
+              //Adjust the x-coordinate for the shrinking of the east-west distances
+              var xp = x / Math.cos(y0);
+
+              var newlat = y + y0;
+              var newlon = x + x0;
+              var newlon2 = xp + x0;
+              lat = newlat;
+              lng = newlon;
+
+
+
+
+
+              // Random random = new Random();
+
+              ///  lat = kioskLat + (5 / EARTH_RADIUS) * (180 / Math.PI);
+              //  lng = kioskLng + (5 / EARTH_RADIUS) * (180 / Math.PI) / Math.cos(kioskLat * Math.PI / 180);
+              //  console.log("lat:" + lat);
+              //  console.log("lng:" + lng);
+              let markerList = this.allMarkers;
+              this.setMarker(lat, lng, markerUrl, "farmer", farmerId, false, -1, markerList);
+              this.bounds.extend({ lat: Number(lat), lng: Number(lng) });
+              this.map.fitBounds(this.bounds);
             }
             this.farmerList.push({ farmerId: farmerId, lat: lat, lng: lng });
           }
         }
       }
     });
-    let kioskDetails = this.kioskList.find(item => item.kioskId == this.selectedKiosk);
-    if (kioskDetails != undefined) {
-      if (kioskDetails.lat != "") {
-        let markerList=this.allMarkers;
-        let markerUrl = "../assets/img/kiosk.png";
-        this.setMarker(kioskDetails.lat, kioskDetails.lng, markerUrl, "kiosk", this.selectedKiosk, false, -1,markerList);
-        this.bounds.extend({ lat: Number(kioskDetails.lat), lng: Number(kioskDetails.lng) });
-        this.map.fitBounds(this.bounds);
-      }
-    }
+
   }
 
-  setMarker(lat: any, lng: any, markerURL: any, type: any, id: any, isSelected: any, index: any, markerList:any) {
-    let height = 50;
-    let width = 50;
+  toRad(Value: any) {
+    return Value * Math.PI / 180;
+  }
+
+  setMarker(lat: any, lng: any, markerURL: any, type: any, id: any, isSelected: any, index: any, markerList: any) {
+    let height = 25;
+    let width = 25;
     if (type == "kiosk") {
       height = 25;
       width = 30;
@@ -176,7 +277,7 @@ export class KioskComponent {
       }
     });
     if (isSelected == true) {
-     // marker.setAnimation(google.maps.Animation.BOUNCE);
+      // marker.setAnimation(google.maps.Animation.BOUNCE);
     }
 
     if (type == "farmer") {
@@ -243,12 +344,12 @@ export class KioskComponent {
     this.allMarkers.push({ marker });
   }
 
-  setSelectedMarker(index: any,markerList:any) {
-    console.log(index);
-    console.log(markerList.length);
-    
-      markerList[index]["marker"].setMap(null);
-   
+  setSelectedMarker(index: any, markerList: any) {
+    // console.log(index);
+    //console.log(markerList.length);
+
+    markerList[index]["marker"].setMap(null);
+
 
   }
 
@@ -302,8 +403,8 @@ export class KioskComponent {
               this.pageDetail.kioskMobile = kioskDetails.mobile;
             }
           }
-          let markerList=this.allMarkers;
-          this.setMarker(this.kioskList[i]["lat"], this.kioskList[i]["lng"], markerUrl, "kiosk", this.kioskList[i]["kioskId"], isSelected, 0,markerList);
+          let markerList = this.allMarkers;
+          this.setMarker(this.kioskList[i]["lat"], this.kioskList[i]["lng"], markerUrl, "kiosk", this.kioskList[i]["kioskId"], isSelected, 0, markerList);
           this.bounds.extend({ lat: Number(this.kioskList[i]["lat"]), lng: Number(this.kioskList[i]["lng"]) });
         }
       }
