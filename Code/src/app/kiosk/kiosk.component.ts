@@ -24,6 +24,8 @@ export class KioskComponent {
   selectedKiosk: any;
   allMarkers: any[];
   bounds: any;
+  preIndex: any;
+
 
   constructor(public httpService: HttpClient, private actRoute: ActivatedRoute, private mapService: MapService, private commonService: CommonService) { }
 
@@ -49,6 +51,7 @@ export class KioskComponent {
 
 
   getKiosk() {
+    let isFirst = true;
     this.bounds = new google.maps.LatLngBounds();
     this.kioskList = [];
     this.allMarkers = [];
@@ -84,13 +87,25 @@ export class KioskComponent {
                 lat = kioskData[i]["kioskAddress"]["latitude"];
                 lng = kioskData[i]["kioskAddress"]["longitude"];
                 let markerUrl = "../assets/img/kiosk.png";
-                let contentString = '<div style="min-height: 35px;min-width: 35px;text-align: center;'
-                contentString += 'font-size: 14px;padding:2px"><b>' + name + "</b><br/>" + address + '</div>';
-                
-                this.setMarker(lat, lng, markerUrl, contentString, "kiosk", 0, this.farmerList);
+                let markerList=this.allMarkers;
+                this.kioskList.push({ kioskId: kioskId, name: name, address: address, lat: lat, lng: lng, pinCode: pinCode, village: village, mobile: mobile });
                 this.bounds.extend({ lat: Number(lat), lng: Number(lng) });
+                if (isFirst == true) {
+                  isFirst = false;
+                  $('#divKiosk').show();
+                  this.preIndex = 0;
+                  this.setMarker(lat, lng, markerUrl, "kiosk", kioskId, true, 0,markerList);
+                  let details = this.kioskList.find(item => item.kioskId == kioskId);
+                  if (details != undefined) {
+                    this.pageDetail.kioskName = details.name;
+                    this.pageDetail.kioskAddress = details.address;
+                    this.pageDetail.kioskMobile = details.mobile;
+                  }
+                }
+                else {
+                  this.setMarker(lat, lng, markerUrl, "kiosk", kioskId, false, this.allMarkers.length-1,markerList);
+                }
               }
-              this.kioskList.push({ kioskId: kioskId, name: name, address: address, lat: lat, lng: lng, pinCode: pinCode, village: village, mobile: mobile });
             }
           }
           this.map.fitBounds(this.bounds);
@@ -98,7 +113,6 @@ export class KioskComponent {
       }
     });
   }
-
 
   getFarmers() {
     this.bounds = new google.maps.LatLngBounds();
@@ -112,7 +126,7 @@ export class KioskComponent {
         if (farmerData.length > 0) {
           for (let i = 0; i < farmerData.length; i++) {
             let markerUrl = "../assets/img/green.svg";
-            let contentString="";
+            let contentString = "";
             let farmerId = farmerData[i]["farmerId"];
             let lat = "";
             let lng = "";
@@ -120,36 +134,34 @@ export class KioskComponent {
               if (farmerData[i]["farmerAddress"]["latitude"] != null) {
                 lat = farmerData[i]["farmerAddress"]["latitude"];
                 lng = farmerData[i]["farmerAddress"]["longitude"];
-                this.setMarker(lat, lng, markerUrl, contentString, "farmer", farmerId, this.farmerList);
+                let markerList=this.allMarkers;
+                this.setMarker(lat, lng, markerUrl, "farmer", farmerId, false, -1,markerList);
                 this.bounds.extend({ lat: Number(lat), lng: Number(lng) });
                 this.map.fitBounds(this.bounds);
               }
             }
-            
-            this.farmerList.push({ farmerId: farmerId, lat: lat, lng: lng});
+            this.farmerList.push({ farmerId: farmerId, lat: lat, lng: lng });
           }
-
         }
       }
     });
     let kioskDetails = this.kioskList.find(item => item.kioskId == this.selectedKiosk);
     if (kioskDetails != undefined) {
       if (kioskDetails.lat != "") {
+        let markerList=this.allMarkers;
         let markerUrl = "../assets/img/kiosk.png";
-        let contentString = '<div style="min-height: 35px;min-width: 35px;text-align: center;'
-        contentString += 'font-size: 14px;padding:2px"><b>' + kioskDetails.name + "</b><br/>" + kioskDetails.address + '</div>';
-        this.setMarker(kioskDetails.lat, kioskDetails.lng, markerUrl, contentString, "kiosk", 0, this.farmerList);
+        this.setMarker(kioskDetails.lat, kioskDetails.lng, markerUrl, "kiosk", this.selectedKiosk, false, -1,markerList);
         this.bounds.extend({ lat: Number(kioskDetails.lat), lng: Number(kioskDetails.lng) });
         this.map.fitBounds(this.bounds);
       }
     }
   }
 
-  setMarker(lat: any, lng: any, markerURL: any, contentString: any, type: any, farmerId: any, farmerList: any) {
+  setMarker(lat: any, lng: any, markerURL: any, type: any, id: any, isSelected: any, index: any, markerList:any) {
     let height = 50;
     let width = 50;
     if (type == "kiosk") {
-      height = 35;
+      height = 25;
       width = 30;
     }
     let marker = new google.maps.Marker({
@@ -163,12 +175,16 @@ export class KioskComponent {
         origin: new google.maps.Point(0, 0)
       }
     });
+    if (isSelected == true) {
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+    }
 
     if (type == "farmer") {
       let details = this.pageDetail;
       let httpServices = this.httpService;
+
       marker.addListener('click', function () {
-        let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/farmer/" + farmerId + "";
+        let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/farmer/" + id + "";
         httpServices.get(url).subscribe((res) => {
           let data = res;
           if (res != null) {
@@ -209,14 +225,31 @@ export class KioskComponent {
       });
     }
     else {
-      let infowindow = new google.maps.InfoWindow({
-        content: contentString
-      });
+      let pageDetails = this.pageDetail;
+      let kioskList = this.kioskList;
+
       marker.addListener('click', function () {
-        infowindow.open(this.map, marker);
+        // infowindow.open(this.map, marker);
+        $('#divKiosk').show();
+        let details = kioskList.find(item => item.kioskId == id);
+        if (details != undefined) {
+          pageDetails.kioskName = details.name;
+          pageDetails.kioskAddress = details.address;
+          pageDetails.kioskMobile = details.mobile;
+        }
+        KioskComponent.prototype.setSelectedMarker(index,markerList);
       });
     }
     this.allMarkers.push({ marker });
+  }
+
+  setSelectedMarker(index: any,markerList:any) {
+    console.log(index);
+    console.log(markerList.length);
+    
+      markerList[index]["marker"].setMap(null);
+   
+
   }
 
   clearAll() {
@@ -256,11 +289,23 @@ export class KioskComponent {
     this.farmerList = [];
     if (this.kioskList.length > 0) {
       for (let i = 0; i < this.kioskList.length; i++) {
-        let markerUrl = "../assets/img/kiosk.png";
-        let contentString = '<div style="min-height: 35px;min-width: 35px;text-align: center;'
-        contentString += 'font-size: 14px;padding:2px"><b>' + this.kioskList[i]["name"] + "</b><br/>" + this.kioskList[i]["address"] + '</div>';
-        this.setMarker(this.kioskList[i]["lat"], this.kioskList[i]["lng"], markerUrl, contentString, "kiosk", 0, this.farmerList);
-        this.bounds.extend({ lat: Number(this.kioskList[i]["lat"]), lng: Number(this.kioskList[i]["lng"]) });
+        if (this.kioskList[i]["lat"] != "") {
+          let markerUrl = "../assets/img/kiosk.png";
+          let isSelected = false;
+          if (i == 0) {
+            isSelected = true;
+            $('#divKiosk').show();
+            let kioskDetails = this.kioskList.find(item => item.kioskId == this.kioskList[0]["kioskId"]);
+            if (kioskDetails != undefined) {
+              this.pageDetail.kioskName = kioskDetails.name;
+              this.pageDetail.kioskAddress = kioskDetails.address;
+              this.pageDetail.kioskMobile = kioskDetails.mobile;
+            }
+          }
+          let markerList=this.allMarkers;
+          this.setMarker(this.kioskList[i]["lat"], this.kioskList[i]["lng"], markerUrl, "kiosk", this.kioskList[i]["kioskId"], isSelected, 0,markerList);
+          this.bounds.extend({ lat: Number(this.kioskList[i]["lat"]), lng: Number(this.kioskList[i]["lng"]) });
+        }
       }
       this.map.fitBounds(this.bounds);
     }
@@ -287,10 +332,7 @@ export class KioskComponent {
     this.map.mapTypes.set('styled_map', mapstyle);
     this.map.setMapTypeId('styled_map');
   }
-
 }
-
-
 
 export class detail {
   kioskName: string;
