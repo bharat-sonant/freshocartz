@@ -147,14 +147,14 @@ export class KioskComponent {
           isSelected = true;
           this.preIndex = 0;
         }
-        
+
         this.setMarker(this.markerList[i]["lat"], this.markerList[i]["lng"], this.markerList[i]["markerURL"], this.markerList[i]["id"], isSelected, i, this.markerList[i]["type"]);
         this.bounds.extend({ lat: Number(this.markerList[i]["lat"]), lng: Number(this.markerList[i]["lng"]) });
       }
     }
     setTimeout(() => {
       this.addLisnerOnMarkers(this.allMarkers, this.markerList, this.markerList[0]["type"]);
-    }, 600);    
+    }, 600);
     if (this.markerList[0]["type"] == "kiosk") {
       this.map.fitBounds(this.bounds);
     }
@@ -221,7 +221,10 @@ export class KioskComponent {
           httpServices.get(url).subscribe((res) => {
             let data = res;
             if (res != null) {
+              let element = <HTMLElement>document.getElementById('divKiosk');
+              let height = element.clientHeight + 70 + 10;
               $('#divFarmer').show();
+              $('#divFarmer').css('top', height);
               details.farmerEmail = data["email"];
               details.farmerName = data["firstName"];
               if (data["middleName"] != null) {
@@ -279,7 +282,7 @@ export class KioskComponent {
     let kioskLat = 0;
     let kioskLng = 0;
     this.markerList = [];
-    this.farmerList=[];
+    this.farmerList = [];
     let kioskDetails = this.kioskList.find(item => item.kioskId == this.selectedKiosk);
     if (kioskDetails != undefined) {
       if (kioskDetails.lat != "") {
@@ -396,9 +399,9 @@ export class KioskComponent {
         this.allMarkers[i]["marker"].setMap(null);
       }
     }
-    this.allMarkers=[];
-    this.farmerList=[];
-    this.markerList=[];
+    this.allMarkers = [];
+    this.farmerList = [];
+    this.markerList = [];
   }
 
   changeKioskSelection() {
