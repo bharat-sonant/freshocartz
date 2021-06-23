@@ -57,19 +57,8 @@ export class KioskComponent {
   }
 
   setMaps() {
-    var mapstyle = new google.maps.StyledMapType(
-      [
-        {
-          featureType: 'poi',
-          elementType: 'labels',
-          stylers: [{ visibility: "off" }]
-        },
-      ]
-    );
     let mapProp = this.commonService.initMapProperties();
     this.map = new google.maps.Map(this.gmap.nativeElement, mapProp);
-    this.map.mapTypes.set('styled_map', mapstyle);
-    this.map.setMapTypeId('styled_map');
   }
 
   getKiosk() {
@@ -152,9 +141,7 @@ export class KioskComponent {
         this.bounds.extend({ lat: Number(this.markerList[i]["lat"]), lng: Number(this.markerList[i]["lng"]) });
       }
     }
-    setTimeout(() => {
-      this.addLisnerOnMarkers(this.allMarkers, this.markerList, this.markerList[0]["type"]);
-    }, 600);
+    this.addLisnerOnMarkers(this.allMarkers, this.markerList, this.markerList[0]["type"]);
     if (this.markerList[0]["type"] == "kiosk") {
       this.map.fitBounds(this.bounds);
     }
