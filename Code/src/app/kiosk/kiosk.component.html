@@ -41,24 +41,24 @@
       </div>
       <div class="main-box">
         <div class="all-details">
-          <h6>{{pageDetail.kioskName}} <br>
-            <div style="width: 20%; float: left;">
+          <h6 ><p style="font-weight: bold;padding-bottom: 5px;"> {{pageDetail.kioskName}} </p>
+            <div style="width: 20%; float: left;padding-bottom: 5px;">
               <p> Mobile </p>
             </div>
-            <div style="width: 80%; float: right;">
+            <div style="width: 80%; float: right;padding-bottom: 5px;">
               <p>: {{pageDetail.kioskMobile}}</p>
             </div>
 
-            <div style="width: 20%; float: left;padding-bottom: 10px;">
+            <div style="width: 20%; float: left;padding-bottom: 5px;">
               <p> Address </p>
             </div>
-            <div style="width: 80%; float: right;padding-bottom: 10px;">
+            <div style="width: 80%; float: right;padding-bottom: 5px;">
               <p>: {{pageDetail.kioskAddress}}</p>
             </div>
           </h6>
         </div>
       </div>
-      <div class="main-box" [hidden]="pageDetail.totalFarmers==0">
+      <div class="main-box">
         <div class="all-details">
           <h6>Total Farmers : {{pageDetail.totalFarmers}}
           </h6>
