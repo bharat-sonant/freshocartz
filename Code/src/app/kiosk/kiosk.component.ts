@@ -124,6 +124,9 @@ export class KioskComponent {
           this.getMarkerList();
         }
       }
+    },(error)=>{
+      console.log(error);
+      this.commonService.setAlertMessage("error","No record found !!!");
     });
   }
 
@@ -178,7 +181,6 @@ export class KioskComponent {
       let kioskList = this.kioskList;
       let pageDetails = this.pageDetail;
       let httpServices = this.httpService;
-      let preIndex = this.preIndex;
       for (let i = 0; i < markerList.length; i++) {
         markerList[i]["marker"].addListener('click', function () {
           $('#divKiosk').show();
@@ -202,6 +204,7 @@ export class KioskComponent {
     else if (type == "farmer") {
       let details = this.pageDetail;
       let httpServices = this.httpService;
+      let commonService=this.commonService;
       for (let i = 0; i < markerList.length; i++) {
         markerList[i]["marker"].addListener('click', function () {
           let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/farmer/" + list[i]["id"] + "";
@@ -244,6 +247,9 @@ export class KioskComponent {
                 details.farmerAddress = "";
               }
             }
+          },(error)=>{
+            console.log(error);
+            commonService.setAlertMessage("error","No record found !!!");
           });
           KioskComponent.prototype.setSelectedMarker(i, markerList);
         });
@@ -367,6 +373,9 @@ export class KioskComponent {
           this.getMarkerList();
         }
       }
+    },(error)=>{
+      console.log(error);
+      this.commonService.setAlertMessage("error","No record found !!!");
     });
 
   }
