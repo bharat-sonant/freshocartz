@@ -529,6 +529,143 @@ color: #fff;
 margin: 0px!important;
 }
 /************** Route tracking box end **************/
+
+
+ /* Right Box*/
+ #myBox {
+    position: absolute;
+    right: 15px;
+    top: 265px;
+    background-color: #fff;
+    border: 1px solid #1f7e40;
+    width: 270px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    // border-radius: 10px;
+    height: 65vh;
+    border-radius: 5px;
+    }
+    #myBox .main-info{
+    padding: 7px 15px;
+    }
+    #myBox .card{
+    margin-bottom: -6px!important;
+    border-radius: 5px;
+    }
+    #myBox .card-header{
+    padding: 0px!important;
+    }
+    #myBox .card-body{
+    padding: 0px!important;
+    }
+    #myBox .info-bg{
+    background: #efefef;
+    }
+    #myBox .main-info:hover{
+    background: #e8e8e8;
+    }
+    #myBox .plan-header{
+    height: 50px;
+    text-align: center;
+    font-size: 14px;
+    padding-top: 15px;
+    color: #fff;
+    background: #1f7e40;
+    cursor: pointer;
+    box-shadow: 0 1px 15px 1px rgba(39, 39, 39, 0.1);
+    }
+    #myBox .plan-header:hover{
+    background: #1f7e40;
+    }
+    
+    #myBox .main-info{
+    float: left;
+    width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);;
+    padding-bottom: 10px;
+    }
+    #myBox .icon-bg{
+    float: left;
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    border: 1px solid rgba(211, 211, 211, 0.582);
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.185);
+    }
+
+    
+
+/**************************Table Start***************************/
+.table-bg{
+
+    background-color: #fff;
+    border-radius: 0.25rem;
+     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+  }
+  .table-header{
+    height: 40px;
+    margin-top: 15px;
+    text-align: center;
+    // border-bottom: 5px solid #dcdcdc;
+    background-color: #1f7e40;;
+    padding: 15px;
+    padding-top:8px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+    border-radius: 0.25rem 0.25rem 0rem 0rem ;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    border: 1px solid #e2e2e2;
+  }
+  .tableFixHead {
+    overflow-y: auto;
+    height: 60vh;
+  }
+  
+  .tableFixHead thead th {
+    position: sticky;
+    top: 0;
+    background-color: #1f7e40;
+    color: #fff;
+    font-size: 13px;
+    z-index: 33333;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  thead th{
+    font-size:15px;
+    color: rgb(56, 56, 56);
+    font-weight: normal;
+  }
+  table td{
+    padding: 7px 7px !important;
+    font-size: 12px;
+    
+  }
+  .tableFixHead a{
+    color: #000;
+  }
+  .tableFixHead .fa-long-arrow-alt-down{
+    color: red;
+  }
+  .tableFixHead .fa-long-arrow-alt-up{
+    color: #1f7e40;
+  }
+  .red-halt{
+    background-color: red;
+    color: #fff!important;
+    padding: 5px 10px;
+    border-radius: 20px;
+  }
+  .tableFixHead::-webkit-scrollbar{
+    display: none; 
+   }
+   
+  /**************************Table End***************************/
     
     
     

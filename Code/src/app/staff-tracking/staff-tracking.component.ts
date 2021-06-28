@@ -19,10 +19,15 @@ export class StaffTrackingComponent {
   staffList: any[];
   selectedKiosk: any;
   selectedStaff: any;
+  toDayDate: any;
   selectedDate: any;
+  selectedYear: any;
+  selectedMonth: any;
   polylines: any[];
   allMarkers: any[] = [];
   lineDataList: any[] = [];
+  monthDetail: any[];
+  yearList: any[];
 
   vehicleMarker: any;
   lineIndex: any;
@@ -43,11 +48,28 @@ export class StaffTrackingComponent {
       distance: "0",
       time: "---"
     };
+
   ngOnInit() {
     this.lineIndex = 0;
+    this.toDayDate = this.commonService.setTodayDate();
+    this.selectedDate = "2021-01-27";
+    this.selectedStaff="20";
+    this.getYear();
     this.setHeight();
     this.setMaps();
     this.getKiosk();
+  }
+  
+  getYear() {
+    this.yearList = [];
+    let year = parseInt(this.selectedDate.split('-')[0]);
+    let month = this.selectedDate.split('-')[1];
+    for (let i = year - 2; i <= year; i++) {
+      this.yearList.push({ year: i });
+    }
+
+    this.selectedYear = year;
+    this.selectedMonth = month;
   }
 
 
@@ -57,7 +79,7 @@ export class StaffTrackingComponent {
   }
 
   setMaps() {
-    let mapProp = this.commonService.initMapProperties(true,true);
+    let mapProp = this.commonService.initMapProperties(true, true);
     this.map = new google.maps.Map(this.gmap.nativeElement, mapProp);
   }
 
@@ -115,15 +137,25 @@ export class StaffTrackingComponent {
     this.selectedStaff = $('#ddlStaff').val();
     if (this.selectedStaff == "0") {
       $('#divStaff').hide();
+      $('#myBox').hide();
       this.commonService.setAlertMessage("error", "Please select staff !!!");
       return;
     }
     this.getStaffDetail();
     this.clearMap();
+    this.getMonthDetail();
+  }
+
+  changeYearSelection() {
+    this.selectedYear = $('#ddlYear').val();
+    this.getMonthDetail();
+  }
+  changeMonthSelection() {
+    this.selectedMonth = $('#ddlMonth').val();
+    this.getMonthDetail();
   }
 
   getStaffDetail() {
-    this.selectedStaff = "25";
     let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/staff/" + this.selectedStaff;
     this.httpService.get(url).subscribe((res) => {
       if (res != null) {
@@ -154,6 +186,7 @@ export class StaffTrackingComponent {
         this.staffDetail.mobile = mobile;
         this.staffDetail.address = address;
         $('#divStaff').show();
+        $('#myBox').show();
         this.getStaffLocation();
       }
     }, (error) => {
@@ -162,14 +195,13 @@ export class StaffTrackingComponent {
       this.staffDetail.mobile = "";
       this.staffDetail.address = "";
       $('#divStaff').hide();
+      $('#myBox').hide();
       this.commonService.setAlertMessage("error", "No record found !!!");
     });
 
   }
 
   getStaffLocation() {
-    this.selectedStaff = "40";
-    this.selectedDate = "2021-01-27";
     let lat = "";
     let lng = "";
     let markerURL = "";
@@ -181,6 +213,7 @@ export class StaffTrackingComponent {
     this.endTime = "";
 
     let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/staff/" + this.selectedStaff + "/movement?date=" + this.selectedDate + "";
+    
     this.httpService.get(url).subscribe((res) => {
       if (res != null) {
         let data = Object.values(res);
@@ -194,17 +227,16 @@ export class StaffTrackingComponent {
             this.endTime = data[i]["timestamp"].split('T')[0] + " " + time.toString().split(':')[0] + ":" + time.toString().split(':')[1];
           }
           if (this.endTime == "") {
-            let dat1=new Date(this.startTime);
+            let dat1 = new Date(this.startTime);
             let dat2 = new Date();
-            let totalmin=this.commonService.timeDifferenceMin(dat2, dat1);
-            this.staffDetail.time =this.commonService.getHrsFull(totalmin);
+            let totalmin = this.commonService.timeDifferenceMin(dat2, dat1);
+            this.staffDetail.time = this.commonService.getHrsFull(totalmin);
           }
-          else
-          { 
-            let dat1=new Date(this.startTime);
+          else {
+            let dat1 = new Date(this.startTime);
             let dat2 = new Date(this.endTime);
-            let totalmin=this.commonService.timeDifferenceMin(dat2, dat1);
-            this.staffDetail.time =this.commonService.getHrsFull(totalmin);
+            let totalmin = this.commonService.timeDifferenceMin(dat2, dat1);
+            this.staffDetail.time = this.commonService.getHrsFull(totalmin);
           }
 
           markerURL = this.getEventMarker(data[i]["event"]);
@@ -234,6 +266,82 @@ export class StaffTrackingComponent {
     }, (error) => {
       this.commonService.setAlertMessage("error", "No record found !!!");
     });
+  }
+
+  getMonthDetail() {
+    this.monthDetail = [];
+    let year = this.selectedDate.split("-")[0];
+    let month = this.selectedDate.split("-")[1];
+    let days = new Date(year, month, 0).getDate();
+    if (this.toDayDate.split("-")[1] == this.selectedDate.split("-")[1]) {
+      days = this.toDayDate.split("-")[2];
+    }
+    for (let j = 1; j < days; j++) {
+      let monthDate = year + '-' + month + '-' + (j < 10 ? '0' : '') + j;
+      let monthShortName = this.commonService.getCurrentMonthShortName(new Date(monthDate).getMonth());
+      let day = monthDate.split("-")[2] + " " + monthShortName;
+      this.monthDetail.push({ day: day, km: '0.000', hour: '', monthDate: monthDate });
+      let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/staff/" + this.selectedStaff + "/movement?date=" + monthDate + "";
+      
+      this.httpService.get(url).subscribe((res) => {
+        if (res != null) {
+          let data = Object.values(res);
+          let totalTime = 0;
+          let totalDistance = 0;
+          let monthLatLong = [];
+          for (let i = 0; i < data.length; i++) {
+            if (i == 0) {
+              let time = data[i]["timestamp"].split('T')[1].toString();
+              this.startTime = data[i]["timestamp"].split('T')[0] + " " + time.toString().split(':')[0] + ":" + time.toString().split(':')[1];
+            }
+            if (data[i]["event"] == "USER_ATTENDANCE_EVENT") {
+              let time = data[i]["timestamp"].split('T')[1].toString();
+              this.endTime = data[i]["timestamp"].split('T')[0] + " " + time.toString().split(':')[0] + ":" + time.toString().split(':')[1];
+            }
+            if (this.endTime == "") {
+              let dat1 = new Date(this.startTime);
+              let dat2 = new Date();
+              totalTime = this.commonService.timeDifferenceMin(dat2, dat1);
+            }
+            else {
+              let dat1 = new Date(this.startTime);
+              let dat2 = new Date(this.endTime);
+              totalTime = this.commonService.timeDifferenceMin(dat2, dat1);
+            }
+            let latLong: string = this.getDefaultCoordinates(i);
+            let routeDateList = latLong.substring(1, latLong.length - 1).split(')~(');
+            if (routeDateList.length > 0) {
+              for (let j = 0; j < routeDateList.length; j++) {
+                let lat = routeDateList[j].split(',')[0];
+                let lng = routeDateList[j].split(',')[1];
+                monthLatLong.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+              }
+            }
+          }
+          if (monthLatLong.length > 0) {
+            for (let k = 1; k < monthLatLong.length; k++) {
+              let lat1 = monthLatLong[k - 1]["lat"];
+              let lat2 = monthLatLong[k]["lat"];
+              let lng1 = monthLatLong[k - 1]["lng"];
+              let lng2 = monthLatLong[k]["lng"];
+              totalDistance += Number(this.commonService.getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2));
+            }
+          }
+          let monthDetail = this.monthDetail.find(item => item.monthDate == monthDate);
+          if (monthDetail != undefined) {
+            monthDetail.hour = this.commonService.getHrsFull(totalTime);
+            monthDetail.km = (totalDistance / 1000).toFixed(3);
+          }
+        }
+      }, (error) => {
+        this.commonService.setAlertMessage("error", "No record found !!!");
+      });
+    }
+  }
+
+  getMonthSelectedDetail(day:any){
+    this.selectedDate =this.selectedYear+ "-" + this.selectedMonth + "-" + day.split(' ')[0];
+    this.getStaffLocation();
   }
 
   getDistance() {
