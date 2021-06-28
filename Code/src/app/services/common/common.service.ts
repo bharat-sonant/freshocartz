@@ -103,13 +103,13 @@ export class CommonService {
     return year + "-" + month + "-" + nextday;
   }
 
-  initMapProperties(scrollwheel:any) {
+  initMapProperties(zoomControl:any,scrollwheel:any) {
     var mapProp = {
       // center: new google.maps.LatLng(28.4041, 77.07301009999999),
       center: new google.maps.LatLng(26.8870932, 75.7379567),
       zoom: 14,
       disableDefaultUI: true,
-      zoomControl: true,
+      zoomControl: zoomControl,
       backgroundColor: 'none',
       mapTypeControl: true,
       fullscreenControl: false,

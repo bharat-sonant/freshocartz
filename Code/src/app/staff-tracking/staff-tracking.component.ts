@@ -57,7 +57,7 @@ export class StaffTrackingComponent {
   }
 
   setMaps() {
-    let mapProp = this.commonService.initMapProperties(true);
+    let mapProp = this.commonService.initMapProperties(true,true);
     this.map = new google.maps.Map(this.gmap.nativeElement, mapProp);
   }
 

@@ -56,7 +56,7 @@ export class KioskComponent {
   }
 
   setMaps() {
-    let mapProp = this.commonService.initMapProperties(false);
+    let mapProp = this.commonService.initMapProperties(false,false);
     this.map = new google.maps.Map(this.gmap.nativeElement, mapProp);
     
   }
