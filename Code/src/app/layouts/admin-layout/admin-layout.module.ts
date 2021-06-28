@@ -8,6 +8,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrModule } from 'ngx-toastr';
 import { HomeComponent } from '../../home/home.component';
 import { KioskComponent } from '../../kiosk/kiosk.component';
+import { StaffTrackingComponent } from '../../staff-tracking/staff-tracking.component';
 
 @NgModule({
   imports: [
@@ -21,6 +22,7 @@ import { KioskComponent } from '../../kiosk/kiosk.component';
   declarations: [
     KioskComponent,
     HomeComponent,
+    StaffTrackingComponent
   ]
 })
 

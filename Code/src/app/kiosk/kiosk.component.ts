@@ -31,7 +31,6 @@ export class KioskComponent {
 
   constructor(public httpService: HttpClient, private actRoute: ActivatedRoute, private mapService: MapService, private commonService: CommonService) { }
 
-  public selectedZone: any;
   pageDetail: detail =
     {
       kioskName: "",

@@ -1,0 +1,73 @@
+<section class="header">
+    <div class="row no-gutters">
+        <div class="col-md-2">
+            <select class="caret-select" id="ddlKiosk" (change)="changeKioskSelection()" style="margin-left: 10px;">
+                <option value="0">
+                    --Select Kiosk--
+                </option>
+                <option *ngFor="let kiosk of kioskList" value={{kiosk.kioskId}}>
+                    {{kiosk.name}}
+                </option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="caret-select" id="ddlStaff" (change)="changeStaffSelection()" style="margin-left: 10px;">
+                <option value="0">
+                    --Select Staff--
+                </option>
+                <option *ngFor="let staff of staffList" value={{staff.staffId}}>
+                    {{staff.name}}
+                </option>
+            </select>
+        </div>
+        <div class="col-md-3" style="padding-top: 10px; padding-left: 30px; text-align: center;">
+            <h3> STAFF</h3>
+        </div>
+        <div class="col-md-5 txt-right" style="padding-top: 10px; padding-left: 30px; text-align: center;">
+            <button id="btnReset" class="fa-expand-showgraph" (click)="getReset();" title="Re-set"
+                style="margin-right: -10px;"><i class="fas fa-sync" style="font-size: 17px;"></i></button>
+            <select class="caret-select" id="ddlSpeed" (change)="setSpeed($event.target.value)"
+                style="width: 80px; height: 35px;">
+                <option value="0">Speed</option>
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+                <option value="3" selected>3x</option>
+                <option value="4">4x</option>
+                <option value="5">5x</option>
+                <option value="10">10x</option>
+            </select>
+
+            <button class="fa-expand-showgraph" (click)="getPlayStop();" title="Play Route"><i id="playStop"
+                    class="fab fa-youtube" style="font-size: 17px;"></i></button>
+        </div>
+    </div>
+</section>
+
+<div #gmap style="width:100%;height:600px;margin-top: -50px; position:absolute;" id="divMap"></div>
+
+<div id="divStaff" class="tracking-bg" style="display: none;">
+    <div class="main-info" style="padding-top: 10px;">
+        <div class="icon-bg">
+            <img src="../../assets/img/user.svg" style="margin-top: 6px; width: 22px;">
+        </div>
+        <h1>{{staffDetail.name}}<br />
+            <p>Mob. : {{staffDetail.mobile}}</p>
+        </h1>
+    </div>
+    <div class="main-info" style="padding-top: 10px;">
+        <div class="icon-bg">
+            <img src="../../assets/img/distance-covered.svg" style="margin-top: 6px; width: 26px;">
+        </div>
+        <h1>{{staffDetail.distance}} km.<br />
+            <p>Distance Covered</p>
+        </h1>
+    </div>
+    <div class="main-info" style="padding-top: 10px;border-bottom: none;">
+        <div class="icon-bg">
+            <img src="../../assets/img/travel-time.svg" style="margin-top: 6px; width: 22px;">
+        </div>
+        <h1>{{staffDetail.time}}<br />
+            <p>Travel Time</p>
+        </h1>
+    </div>
+</div>

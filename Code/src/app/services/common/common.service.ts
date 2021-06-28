@@ -106,16 +106,16 @@ export class CommonService {
   initMapProperties() {
     var mapProp = {
       // center: new google.maps.LatLng(28.4041, 77.07301009999999),
-      center: new google.maps.LatLng(27.6094, 75.1077),
+      center: new google.maps.LatLng(26.8870932, 75.7379567),
       zoom: 14,
       disableDefaultUI: true,
-      zoomControl: false,
+      zoomControl: true,
       backgroundColor: 'none',
       mapTypeControl: true,
       fullscreenControl: false,
       streetViewControl: false,       
       scaleControl: false,
-      scrollwheel: false,     
+      scrollwheel: true,     
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       // styles: [	  
       //   { "elementType": "labels.icon", "stylers": [ { "visibility": "on" } ] },
@@ -529,5 +529,23 @@ export class CommonService {
       $("#divSideMenus").hide();
       return;
     }
+  }
+
+  getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6377830; // metres
+    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // in metres
+  }
+
+  deg2rad(deg: any) {
+    return deg * (Math.PI / 180)
   }
 }
