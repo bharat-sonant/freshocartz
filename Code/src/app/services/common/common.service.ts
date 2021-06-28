@@ -103,7 +103,7 @@ export class CommonService {
     return year + "-" + month + "-" + nextday;
   }
 
-  initMapProperties() {
+  initMapProperties(scrollwheel:any) {
     var mapProp = {
       // center: new google.maps.LatLng(28.4041, 77.07301009999999),
       center: new google.maps.LatLng(26.8870932, 75.7379567),
@@ -115,7 +115,7 @@ export class CommonService {
       fullscreenControl: false,
       streetViewControl: false,       
       scaleControl: false,
-      scrollwheel: true,     
+      scrollwheel: scrollwheel,     
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       // styles: [	  
       //   { "elementType": "labels.icon", "stylers": [ { "visibility": "on" } ] },
