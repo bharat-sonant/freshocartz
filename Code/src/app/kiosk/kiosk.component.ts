@@ -248,7 +248,7 @@ export class KioskComponent {
             }
           },(error)=>{
             console.log(error);
-            commonService.setAlertMessage("error","No record found !!!");
+            commonService.setAlertMessage("error","Server Not Respoding, Please try back later. !!!");
           });
           KioskComponent.prototype.setSelectedMarker(i, markerList);
         });
