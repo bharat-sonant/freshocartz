@@ -93,8 +93,11 @@ export class StaffTrackingComponent {
           for (let i = 0; i < kioskData.length; i++) {
             let kioskId = kioskData[i]["kioskId"];
             let name = kioskData[i]["name"];
-            this.kioskList.push({ kioskId: kioskId, name: name });
+            if (name != "") {
+              this.kioskList.push({ kioskId: kioskId, name: name });
+            }
           }
+          this.kioskList=this.commonService.transformNumeric(this.kioskList,'name');
         }
       }
     }, (error) => {
@@ -122,8 +125,11 @@ export class StaffTrackingComponent {
           for (let i = 0; i < data.length; i++) {
             let staffId = data[i]["staffId"];
             let name = data[i]["kioskStaffStaff"]["firstName"];
+            if (name != "") {
             this.staffList.push({ staffId: staffId, name: name });
+            }
           }
+          this.staffList=this.commonService.transformNumeric(this.staffList,'name');
         }
       }
     }, (error) => {

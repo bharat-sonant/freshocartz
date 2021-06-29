@@ -13,9 +13,7 @@ export class CommonService {
   notificationInterval: any;
 
 
-  getAllZones() {
-    return JSON.parse(localStorage.getItem('zones'));
-  }
+  
 
   setTodayDate() {
     let d = new Date();
