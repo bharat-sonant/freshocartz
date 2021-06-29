@@ -52,14 +52,14 @@ export class StaffTrackingComponent {
   ngOnInit() {
     this.lineIndex = 0;
     this.toDayDate = this.commonService.setTodayDate();
-    this.selectedDate = "2021-01-27";
-    this.selectedStaff="20";
+    this.selectedDate = "2021-04-07";
+    this.selectedStaff = "37";
     this.getYear();
     this.setHeight();
     this.setMaps();
     this.getKiosk();
   }
-  
+
   getYear() {
     this.yearList = [];
     let year = parseInt(this.selectedDate.split('-')[0]);
@@ -115,7 +115,7 @@ export class StaffTrackingComponent {
   }
 
   getStaffList() {
-    this.selectedKiosk = "104";
+    this.selectedKiosk = "69";
     let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/kiosk/" + this.selectedKiosk + "/staff?limit=10000&offset=0";
     this.httpService.get(url).subscribe((res) => {
       if (res != null) {
@@ -169,17 +169,19 @@ export class StaffTrackingComponent {
         if (res["mobileNumber"] != null) {
           mobile = res["mobileNumber"];
         }
-        if (res["staffAddress"]["addressLine1"] != null) {
-          address = res["staffAddress"]["addressLine1"];
-        }
-        if (res["staffAddress"]["addressLine2"] != null) {
-          address += ", " + res["staffAddress"]["addressLine2"];
-        }
-        if (res["staffAddress"]["village"] != null) {
-          address += ", " + res["staffAddress"]["village"];
-        }
-        if (res["staffAddress"]["pincode"] != null) {
-          address += " - " + res["staffAddress"]["pincode"];
+        if (res["staffAddress"] != null) {
+          if (res["staffAddress"]["addressLine1"] != null) {
+            address = res["staffAddress"]["addressLine1"];
+          }
+          if (res["staffAddress"]["addressLine2"] != null) {
+            address += ", " + res["staffAddress"]["addressLine2"];
+          }
+          if (res["staffAddress"]["village"] != null) {
+            address += ", " + res["staffAddress"]["village"];
+          }
+          if (res["staffAddress"]["pincode"] != null) {
+            address += " - " + res["staffAddress"]["pincode"];
+          }
         }
         this.staffDetail.name = name;
         this.staffDetail.email = email;
@@ -202,6 +204,8 @@ export class StaffTrackingComponent {
   }
 
   getStaffLocation() {
+
+    this.selectedStaff = "37";
     let lat = "";
     let lng = "";
     let markerURL = "";
@@ -213,7 +217,7 @@ export class StaffTrackingComponent {
     this.endTime = "";
 
     let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/staff/" + this.selectedStaff + "/movement?date=" + this.selectedDate + "";
-    
+
     this.httpService.get(url).subscribe((res) => {
       if (res != null) {
         let data = Object.values(res);
@@ -222,7 +226,7 @@ export class StaffTrackingComponent {
             let time = data[i]["timestamp"].split('T')[1].toString();
             this.startTime = data[i]["timestamp"].split('T')[0] + " " + time.toString().split(':')[0] + ":" + time.toString().split(':')[1];
           }
-          if (data[i]["event"] == "USER_ATTENDANCE_EVENT") {
+          if (i == data.length - 1) {
             let time = data[i]["timestamp"].split('T')[1].toString();
             this.endTime = data[i]["timestamp"].split('T')[0] + " " + time.toString().split(':')[0] + ":" + time.toString().split(':')[1];
           }
@@ -240,18 +244,37 @@ export class StaffTrackingComponent {
           }
 
           markerURL = this.getEventMarker(data[i]["event"]);
-          let latLong: string = this.getDefaultCoordinates(i);
-          let routeDateList = latLong.substring(1, latLong.length - 1).split(')~(');
-          if (routeDateList.length > 0) {
-            for (let j = 0; j < routeDateList.length; j++) {
-              lat = routeDateList[j].split(',')[0];
-              lng = routeDateList[j].split(',')[1];
-              if (j == 0) {
-                this.setMarker(lat, lng, markerURL, contentString, "event");
-              }
-              lineData.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
-              this.lineDataList.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
-            }
+          if (data[i]["location"] != null) {
+            let latlng = data[i]["location"]["coordinates"];
+            let lat = latlng[0];
+            let lng = latlng[1];
+            lineData.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+            this.lineDataList.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+          }
+
+          // let latLong: string = this.getDefaultCoordinates(i);
+          //  let routeDateList = latLong.substring(1, latLong.length - 1).split(')~(');
+          // if (routeDateList.length > 0) {
+          //   for (let j = 0; j < routeDateList.length; j++) {
+          //     lat = routeDateList[j].split(',')[0];
+          //     lng = routeDateList[j].split(',')[1];
+          //     if (j == 0) {
+          //       this.setMarker(lat, lng, markerURL, contentString, "event");
+          //     }
+          //    lineData.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+          //     this.lineDataList.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+          //   }
+          //   let line = new google.maps.Polyline({
+          //     path: lineData,
+          //     strokeColor: "green",
+          //     strokeWeight: 2
+          //   });
+          //   this.polylines[i] = line;
+          //    this.polylines[i].setMap(this.map);
+          // }
+        }
+        if (lineData.length > 0) {
+          for (let i = 0; i < lineData.length; i++) {
             let line = new google.maps.Polyline({
               path: lineData,
               strokeColor: "green",
@@ -261,6 +284,7 @@ export class StaffTrackingComponent {
             this.polylines[i].setMap(this.map);
           }
         }
+
         this.getDistance();
       }
     }, (error) => {
@@ -282,7 +306,7 @@ export class StaffTrackingComponent {
       let day = monthDate.split("-")[2] + " " + monthShortName;
       this.monthDetail.push({ day: day, km: '0.000', hour: '', monthDate: monthDate });
       let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/staff/" + this.selectedStaff + "/movement?date=" + monthDate + "";
-      
+
       this.httpService.get(url).subscribe((res) => {
         if (res != null) {
           let data = Object.values(res);
@@ -294,9 +318,11 @@ export class StaffTrackingComponent {
               let time = data[i]["timestamp"].split('T')[1].toString();
               this.startTime = data[i]["timestamp"].split('T')[0] + " " + time.toString().split(':')[0] + ":" + time.toString().split(':')[1];
             }
-            if (data[i]["event"] == "USER_ATTENDANCE_EVENT") {
+            if (i == data.length - 1) {
+              //if (data[i]["event"] == "USER_ATTENDANCE_EVENT") {
               let time = data[i]["timestamp"].split('T')[1].toString();
               this.endTime = data[i]["timestamp"].split('T')[0] + " " + time.toString().split(':')[0] + ":" + time.toString().split(':')[1];
+              //}
             }
             if (this.endTime == "") {
               let dat1 = new Date(this.startTime);
@@ -308,27 +334,37 @@ export class StaffTrackingComponent {
               let dat2 = new Date(this.endTime);
               totalTime = this.commonService.timeDifferenceMin(dat2, dat1);
             }
-            let latLong: string = this.getDefaultCoordinates(i);
-            let routeDateList = latLong.substring(1, latLong.length - 1).split(')~(');
-            if (routeDateList.length > 0) {
-              for (let j = 0; j < routeDateList.length; j++) {
-                let lat = routeDateList[j].split(',')[0];
-                let lng = routeDateList[j].split(',')[1];
-                monthLatLong.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
-              }
+            if (data[i]["location"] != null) {
+              let latlng = data[i]["location"]["coordinates"];
+              let lat = latlng[0];
+              let lng = latlng[1];
+              monthLatLong.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+
+
             }
+            //  let latLong: string = this.getDefaultCoordinates(i);
+            //  let routeDateList = latLong.substring(1, latLong.length - 1).split(')~(');
+            //  if (routeDateList.length > 0) {
+            //   for (let j = 0; j < routeDateList.length; j++) {
+            //     let lat = routeDateList[j].split(',')[0];
+            //     let lng = routeDateList[j].split(',')[1];
+            //     monthLatLong.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+            //  }
+            // }
           }
-          if (monthLatLong.length > 0) {
-            for (let k = 1; k < monthLatLong.length; k++) {
-              let lat1 = monthLatLong[k - 1]["lat"];
-              let lat2 = monthLatLong[k]["lat"];
-              let lng1 = monthLatLong[k - 1]["lng"];
-              let lng2 = monthLatLong[k]["lng"];
-              totalDistance += Number(this.commonService.getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2));
-            }
-          }
+
           let monthDetail = this.monthDetail.find(item => item.monthDate == monthDate);
           if (monthDetail != undefined) {
+            totalDistance = 0;
+            if (monthLatLong.length > 0) {
+              for (let k = 1; k < monthLatLong.length; k++) {
+                let lat1 = monthLatLong[k - 1]["lat"];
+                let lat2 = monthLatLong[k]["lat"];
+                let lng1 = monthLatLong[k - 1]["lng"];
+                let lng2 = monthLatLong[k]["lng"];
+                totalDistance += Number(this.commonService.getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2));
+              }
+            }
             monthDetail.hour = this.commonService.getHrsFull(totalTime);
             monthDetail.km = (totalDistance / 1000).toFixed(3);
           }
@@ -339,8 +375,8 @@ export class StaffTrackingComponent {
     }
   }
 
-  getMonthSelectedDetail(day:any){
-    this.selectedDate =this.selectedYear+ "-" + this.selectedMonth + "-" + day.split(' ')[0];
+  getMonthSelectedDetail(day: any) {
+    this.selectedDate = this.selectedYear + "-" + this.selectedMonth + "-" + day.split(' ')[0];
     this.getStaffLocation();
   }
 
@@ -391,6 +427,12 @@ export class StaffTrackingComponent {
   }
 
   clearMap() {
+    this.staffDetail.distance = "0";
+    this.staffDetail.mobile = "";
+    this.staffDetail.address = "";
+    this.staffDetail.email = "";
+    this.staffDetail.name = "";
+    this.staffDetail.time = "---";
     this.vehicleMarker = null;
     if (this.allMarkers != null) {
       if (this.allMarkers.length > 0) {
