@@ -28,6 +28,7 @@ export class StaffTrackingComponent {
   lineDataList: any[] = [];
   monthDetail: any[];
   yearList: any[];
+  startMarker: any;
 
   vehicleMarker: any;
   lineIndex: any;
@@ -52,8 +53,7 @@ export class StaffTrackingComponent {
   ngOnInit() {
     this.lineIndex = 0;
     this.toDayDate = this.commonService.setTodayDate();
-    this.selectedDate = "2021-04-07";
-    this.selectedStaff = "37";
+    this.selectedDate = this.toDayDate;
     this.getYear();
     this.setHeight();
     this.setMaps();
@@ -67,7 +67,6 @@ export class StaffTrackingComponent {
     for (let i = year - 2; i <= year; i++) {
       this.yearList.push({ year: i });
     }
-
     this.selectedYear = year;
     this.selectedMonth = month;
   }
@@ -115,7 +114,6 @@ export class StaffTrackingComponent {
   }
 
   getStaffList() {
-    this.selectedKiosk = "69";
     let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/kiosk/" + this.selectedKiosk + "/staff?limit=10000&offset=0";
     this.httpService.get(url).subscribe((res) => {
       if (res != null) {
@@ -141,17 +139,19 @@ export class StaffTrackingComponent {
       this.commonService.setAlertMessage("error", "Please select staff !!!");
       return;
     }
-    this.getStaffDetail();
     this.clearMap();
     this.getMonthDetail();
   }
 
   changeYearSelection() {
     this.selectedYear = $('#ddlYear').val();
+    this.clearMap();
     this.getMonthDetail();
+
   }
   changeMonthSelection() {
     this.selectedMonth = $('#ddlMonth').val();
+    this.clearMap();
     this.getMonthDetail();
   }
 
@@ -204,8 +204,6 @@ export class StaffTrackingComponent {
   }
 
   getStaffLocation() {
-
-    this.selectedStaff = "37";
     let lat = "";
     let lng = "";
     let markerURL = "";
@@ -245,11 +243,17 @@ export class StaffTrackingComponent {
 
           markerURL = this.getEventMarker(data[i]["event"]);
           if (data[i]["location"] != null) {
-            let latlng = data[i]["location"]["coordinates"];
-            let lat = latlng[0];
-            let lng = latlng[1];
-            lineData.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
-            this.lineDataList.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+            if (data[i]["location"]["coordinates"] != null) {
+              let latlng = data[i]["location"]["coordinates"];
+              let lat = latlng[0];
+              let lng = latlng[1];
+              lineData.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+              this.lineDataList.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
+              if (lineData.length == 1) {
+                markerURL = this.getEventMarker(data[i]["event"]);
+                this.setMarker(lineData[0]["lat"], lineData[0]["lng"], markerURL, "", "start");
+              }
+            }
           }
 
           // let latLong: string = this.getDefaultCoordinates(i);
@@ -294,12 +298,17 @@ export class StaffTrackingComponent {
 
   getMonthDetail() {
     this.monthDetail = [];
-    let year = this.selectedDate.split("-")[0];
-    let month = this.selectedDate.split("-")[1];
+    let year = this.selectedYear;
+    let month = this.selectedMonth;
     let days = new Date(year, month, 0).getDate();
-    if (this.toDayDate.split("-")[1] == this.selectedDate.split("-")[1]) {
+    if (this.toDayDate.split("-")[1] == month && this.toDayDate.split("-")[0] == year) {
       days = this.toDayDate.split("-")[2];
+      this.selectedDate = this.toDayDate;
     }
+    else {
+      this.selectedDate = year + "-" + month + "-01";
+    }
+    this.getStaffDetail();
     for (let j = 1; j < days; j++) {
       let monthDate = year + '-' + month + '-' + (j < 10 ? '0' : '') + j;
       let monthShortName = this.commonService.getCurrentMonthShortName(new Date(monthDate).getMonth());
@@ -377,6 +386,7 @@ export class StaffTrackingComponent {
 
   getMonthSelectedDetail(day: any) {
     this.selectedDate = this.selectedYear + "-" + this.selectedMonth + "-" + day.split(' ')[0];
+    this.clearMap();
     this.getStaffLocation();
   }
 
@@ -421,18 +431,20 @@ export class StaffTrackingComponent {
     });
 
     let centerPoint = new google.maps.LatLng(lat, lng);
-    this.map.setZoom(18);
-    this.map.setCenter(centerPoint);
+    //this.map.setZoom(18);
+    if (type == "start") {
+      this.map.setCenter(centerPoint);
+    }
     this.allMarkers.push({ marker });
   }
 
   clearMap() {
-    this.staffDetail.distance = "0";
+    this.staffDetail.distance = "0.000";
     this.staffDetail.mobile = "";
     this.staffDetail.address = "";
     this.staffDetail.email = "";
     this.staffDetail.name = "";
-    this.staffDetail.time = "---";
+    this.staffDetail.time = "0 hr 00 min";
     this.vehicleMarker = null;
     if (this.allMarkers != null) {
       if (this.allMarkers.length > 0) {
@@ -450,6 +462,8 @@ export class StaffTrackingComponent {
       }
       this.polylines = [];
     }
+    this.lineDataList = [];
+    this.getReset();
   }
 
   getEventMarker(event: any) {
@@ -461,6 +475,9 @@ export class StaffTrackingComponent {
     }
     else if (event == "USER_ATTENDANCE_EVENT") {
       return "../assets/img/attendance-2.png";
+    }
+    else if (event == "start") {
+      return "../assets/img/start.svg";
     }
   }
 
@@ -508,7 +525,7 @@ export class StaffTrackingComponent {
         setTimeout(() => {
           this.lineIndex = this.lineIndex + 1;
           this.animate();
-        }, 180);
+        }, 300);
       }
       else {
         this.vehicleMarker.setPosition(this.lineDataList[this.lineIndex - 1]);
@@ -539,8 +556,10 @@ export class StaffTrackingComponent {
 
   getReset() {
     this.lineIndex = 0;
-    this.vehicleMarker.setPosition(this.lineDataList[0]);
-    this.map.setCenter(this.lineDataList[0]);
+    if (this.lineDataList.length > 0) {
+      this.vehicleMarker.setPosition(this.lineDataList[0]);
+      this.map.setCenter(this.lineDataList[0]);
+    }
     this.isStart = false;
     $('#playStop').removeClass("fas fa-stop-circle");
     $('#playStop').addClass("fab fa-youtube");
