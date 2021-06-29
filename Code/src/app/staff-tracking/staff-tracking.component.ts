@@ -255,27 +255,6 @@ export class StaffTrackingComponent {
               }
             }
           }
-
-          // let latLong: string = this.getDefaultCoordinates(i);
-          //  let routeDateList = latLong.substring(1, latLong.length - 1).split(')~(');
-          // if (routeDateList.length > 0) {
-          //   for (let j = 0; j < routeDateList.length; j++) {
-          //     lat = routeDateList[j].split(',')[0];
-          //     lng = routeDateList[j].split(',')[1];
-          //     if (j == 0) {
-          //       this.setMarker(lat, lng, markerURL, contentString, "event");
-          //     }
-          //    lineData.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
-          //     this.lineDataList.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
-          //   }
-          //   let line = new google.maps.Polyline({
-          //     path: lineData,
-          //     strokeColor: "green",
-          //     strokeWeight: 2
-          //   });
-          //   this.polylines[i] = line;
-          //    this.polylines[i].setMap(this.map);
-          // }
         }
         if (lineData.length > 0) {
           for (let i = 0; i < lineData.length; i++) {
@@ -348,18 +327,7 @@ export class StaffTrackingComponent {
               let lat = latlng[0];
               let lng = latlng[1];
               monthLatLong.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
-
-
             }
-            //  let latLong: string = this.getDefaultCoordinates(i);
-            //  let routeDateList = latLong.substring(1, latLong.length - 1).split(')~(');
-            //  if (routeDateList.length > 0) {
-            //   for (let j = 0; j < routeDateList.length; j++) {
-            //     let lat = routeDateList[j].split(',')[0];
-            //     let lng = routeDateList[j].split(',')[1];
-            //     monthLatLong.push({ lat: parseFloat(lat), lng: parseFloat(lng) });
-            //  }
-            // }
           }
 
           let monthDetail = this.monthDetail.find(item => item.monthDate == monthDate);
