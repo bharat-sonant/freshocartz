@@ -56,9 +56,9 @@ export class KioskComponent {
   }
 
   setMaps() {
-    let mapProp = this.commonService.initMapProperties(false,false);
+    let mapProp = this.commonService.initMapProperties(false, false);
     this.map = new google.maps.Map(this.gmap.nativeElement, mapProp);
-    
+
   }
 
   getKiosk() {
@@ -75,6 +75,7 @@ export class KioskComponent {
           for (let i = 0; i < kioskData.length; i++) {
             let kioskId = kioskData[i]["kioskId"];
             let name = kioskData[i]["name"];
+            name = name.charAt(0).toUpperCase() + name.slice(1);
             let address = "";
             let lat = "";
             let lng = "";
@@ -121,12 +122,13 @@ export class KioskComponent {
               }
             }
           }
+          this.kioskList.sort((a, b) => (b.name < a.name) ? 1 : -1);
           this.getMarkerList();
         }
       }
-    },(error)=>{
+    }, (error) => {
       console.log(error);
-      this.commonService.setAlertMessage("error","No record found !!!");
+      this.commonService.setAlertMessage("error", "No record found !!!");
     });
   }
 
@@ -204,7 +206,7 @@ export class KioskComponent {
     else if (type == "farmer") {
       let details = this.pageDetail;
       let httpServices = this.httpService;
-      let commonService=this.commonService;
+      let commonService = this.commonService;
       for (let i = 0; i < markerList.length; i++) {
         markerList[i]["marker"].addListener('click', function () {
           let url = "https://0wybm6aze4.execute-api.ap-south-1.amazonaws.com/prod/farmer/" + list[i]["id"] + "";
@@ -247,9 +249,9 @@ export class KioskComponent {
                 details.farmerAddress = "";
               }
             }
-          },(error)=>{
+          }, (error) => {
             console.log(error);
-            commonService.setAlertMessage("error","Server Not Respoding, Please try back later. !!!");
+            commonService.setAlertMessage("error", "Server Not Respoding, Please try back later. !!!");
           });
           KioskComponent.prototype.setSelectedMarker(i, markerList);
         });
@@ -373,9 +375,9 @@ export class KioskComponent {
           this.getMarkerList();
         }
       }
-    },(error)=>{
+    }, (error) => {
       console.log(error);
-      this.commonService.setAlertMessage("error","No record found !!!");
+      this.commonService.setAlertMessage("error", "No record found !!!");
     });
 
   }

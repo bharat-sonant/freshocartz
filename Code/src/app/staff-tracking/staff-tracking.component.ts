@@ -92,12 +92,13 @@ export class StaffTrackingComponent {
         if (kioskData.length > 0) {
           for (let i = 0; i < kioskData.length; i++) {
             let kioskId = kioskData[i]["kioskId"];
-            let name = kioskData[i]["name"];
+            let name = kioskData[i]["name"].trim();
             if (name != "") {
+              name = name.charAt(0).toUpperCase() + name.slice(1);
               this.kioskList.push({ kioskId: kioskId, name: name });
             }
           }
-          this.kioskList=this.commonService.transformNumeric(this.kioskList,'name');
+          this.kioskList.sort((a, b) => (b.name < a.name) ? 1 : -1);
         }
       }
     }, (error) => {
@@ -126,10 +127,11 @@ export class StaffTrackingComponent {
             let staffId = data[i]["staffId"];
             let name = data[i]["kioskStaffStaff"]["firstName"];
             if (name != "") {
-            this.staffList.push({ staffId: staffId, name: name });
+              name = name.charAt(0).toUpperCase() + name.slice(1);
+              this.staffList.push({ staffId: staffId, name: name });
             }
           }
-          this.staffList=this.commonService.transformNumeric(this.staffList,'name');
+          this.staffList.sort((a, b) => (b.name < a.name) ? 1 : -1);
         }
       }
     }, (error) => {
