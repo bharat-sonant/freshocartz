@@ -533,7 +533,7 @@ margin: 0px!important;
 
  /* Right Box*/
  #myBox {
-    position: absolute;
+    position: fixed;
     right: 15px;
     top: 265px;
     background-color: #fff;
@@ -541,7 +541,7 @@ margin: 0px!important;
     width: 270px;
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
     // border-radius: 10px;
-    height: 65vh;
+    //height: 55vh;
     border-radius: 5px;
     }
     #myBox .main-info{
@@ -621,7 +621,7 @@ margin: 0px!important;
   }
   .tableFixHead {
     overflow-y: auto;
-    height: 60vh;
+    height: 44vh;    
   }
   
   .tableFixHead thead th {

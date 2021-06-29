@@ -74,52 +74,60 @@
 
 
 <div id="myBox" style="display: none;">
-    <div class="accordion" >
-      <div class="card" >
-        <div aria-labelledby="headingOne" >
-            <div style="background-color: #1f7e40; border-bottom: 1px solid #fff; padding-bottom: 10px;">
-                <select class="caret-select" id="ddlYear" (change)="changeYearSelection()" [(ngModel)]="selectedYear" style="width:120px; margin-left: 10px!important;">
-                    <option value="0">Year</option>
-                <option value={{yer.year}} *ngFor="let yer of yearList" ngSelected="yer.year == selectedYear?'selected':''">{{yer.year}}</option>
-                </select>
-                <select class="caret-select" id="ddlMonth" (change)="changeMonthSelection()" [(ngModel)]="selectedMonth"  style="width:120px; margin-left: 10px!important;">
-                    <option value="0">Month</option>
-                    <option value="01">January</option>
-                    <option value="02">February</option>
-                    <option value="03">March</option>
-                    <option value="04">April</option>
-                    <option value="05">May</option>
-                    <option value="06">June</option>
-                    <option value="07">July</option>
-                    <option value="08">August</option>
-                    <option value="09">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
+    <div class="accordion">
+        <div class="card">
+            <div aria-labelledby="headingOne">
+
+
+                <div class="dth">
+                    <div class="table-bg">
+                        <div
+                        style="background-color: #1f7e40; border-bottom: 1px solid #fff; padding-bottom: 10px;">
+                        <select class="caret-select" id="ddlYear" (change)="changeYearSelection()"
+                            [(ngModel)]="selectedYear" style="width:120px; margin-left: 10px!important;">
+                            <option value="0">Year</option>
+                            <option value={{yer.year}} *ngFor="let yer of yearList"
+                                ngSelected="yer.year == selectedYear?'selected':''">{{yer.year}}</option>
+                        </select>
+                        <select class="caret-select" id="ddlMonth" (change)="changeMonthSelection()"
+                            [(ngModel)]="selectedMonth" style="width:120px; margin-left: 10px!important;">
+                            <option value="0">Month</option>
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                        <div class="tableFixHead">                           
+                            <table class="table table-hover" style="margin-bottom: 0px!important;">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"><b>Day</b></th>
+                                        <th scope="col" class="text-center"><b>Detail</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let dt of monthDetail" (click)="getMonthSelectedDetail(dt.day);"
+                                        style="cursor:pointer;">
+                                        <td style="vertical-align: top; width: 80px;">{{dt.day}}</td>
+                                        <td class="text-left"><span [hidden]="dt.km=='0.000'"> <b>{{dt.km}}</b> Km in
+                                                <b>{{dt.hour}}</b></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-          <div  class="dth">
-            <div class="table-bg">
-              <div class="tableFixHead">
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th scope="col"><b>Day</b></th>
-                      <th scope="col" class="text-center"><b>Detail</b></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let dt of monthDetail" (click)="getMonthSelectedDetail(dt.day);" style="cursor:pointer;">
-                      <td style="vertical-align: top; width: 80px;">{{dt.day}}</td>
-                      <td class="text-left"><span [hidden]="dt.km=='0.000'"> <b>{{dt.km}}</b> Km in <b>{{dt.hour}}</b></span></td>                       
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>          
         </div>
-      </div>
     </div>
-  
-  </div>
+
+</div>
